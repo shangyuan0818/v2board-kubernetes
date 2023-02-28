@@ -1,0 +1,30 @@
+version: "3"
+services:
+  nginx:
+    build:
+      context: ./nginx
+    container_name: nginx
+    ports:
+      - "80:80"
+    restart: always
+    networks:
+      - default
+  php:
+    build:
+      context: ./php80
+    container_name: php
+    expose:
+      - 9501
+    # extra_hosts:
+    #   - "www.site1.com:172.17.0.1"
+    volumes:
+      # - ${SOURCE_DIR}:/www/:rw
+      - ./php80/php.ini:/usr/local/etc/php/php.ini:ro
+      - ./php80/php-fpm.conf:/usr/local/etc/php-fpm.d/www.conf:rw
+      # - ${PHP_LOG_DIR}:/var/log/php
+      # - ${DATA_DIR}/composer:/tmp/composer
+    restart: always
+    cap_add:
+      - SYS_PTRACE
+    networks:
+      - default
