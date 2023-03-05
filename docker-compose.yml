@@ -6,14 +6,13 @@ services:
     container_name: nginx
     ports:
       - "80:80"
-    volumes:
-      - "./www/:/www/:rw"
+    # volumes: # - "./www/:/www/:rw"
     restart: always
     networks:
       - default
   php:
     build:
-      context: ./php80
+      context: ./v2board-php
     container_name: php
     expose:
       - 9501
@@ -22,9 +21,9 @@ services:
     volumes:
       # - ${SOURCE_DIR}:/www/:rw
 
-      - "./www/:/www/:rw"
-      - ./php80/php.ini:/usr/local/etc/php/php.ini:ro
-      - ./php80/php-fpm.conf:/usr/local/etc/php-fpm.d/www.conf:rw
+      # - "./www/:/www/:rw"
+      - ./v2board-php/php.ini:/usr/local/etc/php/php.ini:ro
+      - ./v2board-php/php-fpm.conf:/usr/local/etc/php-fpm.d/www.conf:rw
       # - ${PHP_LOG_DIR}:/var/log/php
       # - ${DATA_DIR}/composer:/tmp/composer
     restart: always
