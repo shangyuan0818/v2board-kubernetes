@@ -38,12 +38,6 @@ jobs:
         id: get-tag
         run: echo ::set-output name=short_ref::${GITHUB_REF#refs/*/}
 
-      - name: Copy src
-        id: copy-src
-        run: |
-          cp -r v2board nginx/v2board
-          cp -r v2board v2board-php/v2board
- 
       - id: docker-push-tagged-nginx
         name: Tag Docker image and push to Google Artifact Registry
         uses: docker/build-push-action@v4
