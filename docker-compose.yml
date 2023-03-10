@@ -6,7 +6,8 @@ services:
     container_name: nginx
     ports:
       - "80:80"
-    # volumes: # - "./www/:/www/:rw"
+    # volumes:
+    #   - "./www/:/www/:rw"
     restart: always
     networks:
       - default
@@ -21,7 +22,7 @@ services:
     volumes:
       # - ${SOURCE_DIR}:/www/:rw
 
-      # - "./www/:/www/:rw"
+      # - "./www1/:/www/:rw"
       - ./v2board-php/php.ini:/usr/local/etc/php/php.ini:ro
       - ./v2board-php/php-fpm.conf:/usr/local/etc/php-fpm.d/www.conf:rw
       # - ${PHP_LOG_DIR}:/var/log/php

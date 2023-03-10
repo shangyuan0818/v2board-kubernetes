@@ -8,7 +8,7 @@ APP_KEY=$APP_KEY
 APP_DEBUG=$APP_DEBUG
 APP_URL=$APP_DEBUG
 
-LOG_CHANNEL=stack
+LOG_CHANNEL=single
 
 DB_CONNECTION=$DB_CONNECTION
 DB_HOST=$DB_HOST
@@ -52,5 +52,5 @@ PUSHER_APP_CLUSTER=mt1
 # MIX_PUSHER_APP_CLUSTER="${PUSHER_APP_CLUSTER}"
 EOF
 
-chmod -R 777 storage/
+chmod -R 777 $(pwd)
 /docker-entrypoint.sh nginx -g "daemon off;"

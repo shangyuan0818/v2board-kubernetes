@@ -1,0 +1,64 @@
+name: Docker Release
+on:
+  push:
+ 
+jobs:
+  gar-push:
+    name: Docker release to Google Artifact Registry
+    runs-on: ubuntu-latest
+ 
+    permissions:
+      contents: 'read'
+      id-token: 'write'
+ 
+    steps:
+      - id: checkout
+        name: Checkout
+        uses: actions/checkout@v3
+ 
+      - id: auth
+        name: Authenticate with Google Cloud
+        uses: google-github-actions/auth@v1
+        with:
+          token_format: access_token
+          workload_identity_provider: ${{ secrets.GCP_AHDARK_PROVIDER_ID }}
+          service_account: ${{ secrets.GCP_AHDARK_SERVICE_ACCOUNT }}@${{ secrets.GCP_AHDARK_PROJECT_ID }}.iam.gserviceaccount.com
+          access_token_lifetime: 300s
+ 
+      - name: Login to Artifact Registry
+        uses: docker/login-action@v1
+        with:
+          registry: ${{ secrets.GCP_AHDARK_REGISTRY_REGION }}-docker.pkg.dev
+          username: oauth2accesstoken
+          password: ${{ steps.auth.outputs.access_token }}
+ 
+      - name: Get tag
+        id: get-tag
+        run: echo ::set-output name=short_ref::${GITHUB_REF#refs/*/}
+
+      - name: Copy src
+        id: copy-src
+        run: |
+          cp -r v2board nginx/v2board
+          cp -r v2board v2board-php/v2board
+ 
+      - id: docker-push-tagged-nginx
+        name: Tag Docker image and push to Google Artifact Registry
+        uses: docker/build-push-action@v4
+        with:
+          push: true
+          context: nginx
+          tags: |
+             ${{ secrets.GCP_AHDARK_REGISTRY_REGION }}-docker.pkg.dev/${{ secrets.GCP_AHDARK_PROJECT_ID }}/${{ secrets.GCP_AHDARK_REGISTRY_ID }}/v2board-nginx:${{ steps.get-tag.outputs.short_ref }}
+             ${{ secrets.GCP_AHDARK_REGISTRY_REGION }}-docker.pkg.dev/${{ secrets.GCP_AHDARK_PROJECT_ID }}/${{ secrets.GCP_AHDARK_REGISTRY_ID }}/v2board-nginx:latest
+             
+      - id: docker-push-tagged-php
+        name: Tag Docker image and push to Google Artifact Registry
+        uses: docker/build-push-action@v4
+        with:
+          push: true
+          context: v2board-php
+          tags: |
+             ${{ secrets.GCP_AHDARK_REGISTRY_REGION }}-docker.pkg.dev/${{ secrets.GCP_AHDARK_PROJECT_ID }}/${{ secrets.GCP_AHDARK_REGISTRY_ID }}/v2board-php:${{ steps.get-tag.outputs.short_ref }}
+             ${{ secrets.GCP_AHDARK_REGISTRY_REGION }}-docker.pkg.dev/${{ secrets.GCP_AHDARK_PROJECT_ID }}/${{ secrets.GCP_AHDARK_REGISTRY_ID }}/v2board-php:latest
+             
