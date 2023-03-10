@@ -1,0 +1,6 @@
+[submodule "nginx/v2board"]
+	path = nginx/v2board
+	url = https://github.com/star-horizon/v2board
+[submodule "v2board-php/v2board"]
+	path = v2board-php/v2board
+	url = https://github.com/star-horizon/v2board
