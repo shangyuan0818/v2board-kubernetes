@@ -39,6 +39,6 @@ RUN mkdir -p /var/log/php && touch /var/log/php/fpm.slow.log
 WORKDIR /www
 COPY --from=deps /app /www/v2board
 
-COPY ./entrypoint.sh /usr/local/bin/
-
-CMD [ "sh","/usr/local/bin/entrypoint.sh"]
+COPY ./entrypoint.sh /
+COPY ./generate_env.sh /
+CMD [ "sh","/entrypoint.sh" ]
