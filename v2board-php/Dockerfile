@@ -7,7 +7,7 @@ FROM php:8.0.9-fpm-alpine
 COPY ./extensions /tmp/extensions
 
 WORKDIR /tmp/extensions
-ENV PHP_EXTENSIONS pdo_mysql,mysqli,mbstring,gd,curl,opcache,pcntl
+ENV PHP_EXTENSIONS pdo_mysql,mysqli,mbstring,gd,curl,opcache,pcntl,redis
 # ENV PHP_EXTENSIONS curl
 RUN chmod +x install.sh \
     && sh install.sh \
@@ -38,6 +38,7 @@ RUN mkdir -p /var/log/php && touch /var/log/php/fpm.slow.log
 
 WORKDIR /www
 COPY --from=deps /app /www/v2board
+RUN ["mv","/www/v2board/config","/www/v2board/config_example"]
 
 COPY ./entrypoint.sh /
 COPY ./generate_env.sh /
