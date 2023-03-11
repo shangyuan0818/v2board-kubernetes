@@ -10,6 +10,7 @@ COPY ./default.conf /etc/nginx/conf.d/default.conf
 
 COPY --from=deps /app /www/v2board
 COPY ./entrypoint.sh /
+COPY ./generate_env.sh /
 CMD [ "sh","/entrypoint.sh" ]
 
 EXPOSE 80
