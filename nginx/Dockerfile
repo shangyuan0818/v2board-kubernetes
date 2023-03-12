@@ -11,8 +11,7 @@ COPY ./default.conf /etc/nginx/conf.d/default.conf
 COPY --from=deps /app /www/v2board
 RUN ["mv","/www/v2board/config","/www/v2board/config_example"]
 
-COPY ./entrypoint.sh /
-COPY ./generate_env.sh /
+COPY entrypoints /
 CMD [ "sh","/entrypoint.sh" ]
 
 EXPOSE 80
