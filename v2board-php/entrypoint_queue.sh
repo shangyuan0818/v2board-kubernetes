@@ -5,4 +5,4 @@ cd /www/v2board/
 sh /generate_env.sh
 
 chmod -R 777 $(pwd)
-php artisan schedule:run
+php artisan horizon
