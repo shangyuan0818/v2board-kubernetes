@@ -49,4 +49,4 @@ PUSHER_APP_CLUSTER=mt1
 # MIX_PUSHER_APP_CLUSTER="${PUSHER_APP_CLUSTER}"
 EOF
 
-cp -ir config_example/* config/
+yes n | cp -ir config_example/* config/
