@@ -1,0 +1,124 @@
+kind: CronJob
+apiVersion: batch/v1beta1
+metadata:
+  name: v2board-schedule
+  namespace: v2b-k8s
+  labels:
+    app: v2board-schedule
+  annotations:
+    kubesphere.io/creator: topjohncian
+spec:
+  schedule: '* * * * *'
+  concurrencyPolicy: Forbid
+  suspend: false
+  jobTemplate:
+    metadata:
+      creationTimestamp: null
+      labels:
+        app: v2board-schedule
+    spec:
+      parallelism: 1
+      completions: 1
+      activeDeadlineSeconds: 300
+      backoffLimit: 3
+      template:
+        metadata:
+          creationTimestamp: null
+        spec:
+          volumes:
+            - name: host-time
+              hostPath:
+                path: /etc/localtime
+                type: ''
+            - name: volume-qvfp1p
+              persistentVolumeClaim:
+                claimName: v2board-nfs
+          containers:
+            - name: container-dkq1ry
+              image: >-
+                asia-east2-docker.pkg.dev/ahdark-services/star-horizon/v2board-php:latest
+              command:
+                - sh
+              args:
+                - /entrypoint_cron.sh
+              env:
+                - name: APP_DEBUG
+                  valueFrom:
+                    configMapKeyRef:
+                      name: v2board-php-env
+                      key: APP_DEBUG
+                - name: APP_KEY
+                  valueFrom:
+                    configMapKeyRef:
+                      name: v2board-php-env
+                      key: APP_KEY
+                - name: APP_NAME
+                  valueFrom:
+                    configMapKeyRef:
+                      name: v2board-php-env
+                      key: APP_NAME
+                - name: APP_URL
+                  valueFrom:
+                    configMapKeyRef:
+                      name: v2board-php-env
+                      key: APP_URL
+                - name: DB_CONNECTION
+                  valueFrom:
+                    configMapKeyRef:
+                      name: v2board-php-env
+                      key: DB_CONNECTION
+                - name: DB_DATABASE
+                  valueFrom:
+                    configMapKeyRef:
+                      name: v2board-php-env
+                      key: DB_DATABASE
+                - name: DB_HOST
+                  valueFrom:
+                    configMapKeyRef:
+                      name: v2board-php-env
+                      key: DB_HOST
+                - name: DB_PORT
+                  valueFrom:
+                    configMapKeyRef:
+                      name: v2board-php-env
+                      key: DB_PORT
+                - name: REDIS_HOST
+                  valueFrom:
+                    configMapKeyRef:
+                      name: v2board-php-env
+                      key: REDIS_HOST
+                - name: REDIS_PORT
+                  valueFrom:
+                    configMapKeyRef:
+                      name: v2board-php-env
+                      key: REDIS_PORT
+                - name: DB_PASSWORD
+                  valueFrom:
+                    secretKeyRef:
+                      name: mariadb
+                      key: mariadb-password
+                - name: DB_USERNAME
+                  valueFrom:
+                    configMapKeyRef:
+                      name: v2board-php-env
+                      key: DB_USERNAME
+              resources: {}
+              volumeMounts:
+                - name: host-time
+                  readOnly: true
+                  mountPath: /etc/localtime
+                - name: volume-qvfp1p
+                  mountPath: /www/v2board/config
+                  subPath: v2board/config
+              terminationMessagePath: /dev/termination-log
+              terminationMessagePolicy: File
+              imagePullPolicy: IfNotPresent
+          restartPolicy: OnFailure
+          terminationGracePeriodSeconds: 60
+          dnsPolicy: ClusterFirst
+          serviceAccountName: default
+          serviceAccount: default
+          securityContext: {}
+          schedulerName: default-scheduler
+  successfulJobsHistoryLimit: 3
+  failedJobsHistoryLimit: 1

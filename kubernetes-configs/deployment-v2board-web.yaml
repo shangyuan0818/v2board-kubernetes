@@ -1,0 +1,255 @@
+kind: Deployment
+apiVersion: apps/v1
+metadata:
+  name: v2board
+  namespace: v2b-k8s
+  labels:
+    app: v2board
+  annotations:
+    configmap.reloader.stakater.com/reload: 'v2board-nginx-conf,v2board-php-env'
+    deployment.kubernetes.io/revision: '52'
+    kubesphere.io/creator: topjohncian
+spec:
+  replicas: 5
+  selector:
+    matchLabels:
+      app: v2board
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        app: v2board
+        pod-template-hash: 68cc77985b
+      annotations:
+        kubesphere.io/creator: topjohncian
+        kubesphere.io/restartedAt: '2023-03-12T03:59:25.657Z'
+        logging.kubesphere.io/logsidecar-config: '{}'
+    spec:
+      volumes:
+        - name: host-time
+          hostPath:
+            path: /etc/localtime
+            type: ''
+        - name: volume-qvfp1p
+          persistentVolumeClaim:
+            claimName: v2board-nfs
+        - name: volume-qmdt9d
+          configMap:
+            name: v2board-nginx-conf
+            defaultMode: 420
+      containers:
+        - name: container-nginx
+          image: >-
+            asia-east2-docker.pkg.dev/ahdark-services/star-horizon/v2board-nginx:latest
+          ports:
+            - name: http-80
+              containerPort: 80
+              protocol: TCP
+          env:
+            - name: STAKATER_V2BOARD_NGINX_CONF_CONFIGMAP
+              value: b0a9bf13aea725deff1811e43b7bce537551d944
+            - name: APP_DEBUG
+              valueFrom:
+                configMapKeyRef:
+                  name: v2board-php-env
+                  key: APP_DEBUG
+            - name: APP_KEY
+              valueFrom:
+                configMapKeyRef:
+                  name: v2board-php-env
+                  key: APP_KEY
+            - name: APP_NAME
+              valueFrom:
+                configMapKeyRef:
+                  name: v2board-php-env
+                  key: APP_NAME
+            - name: APP_URL
+              valueFrom:
+                configMapKeyRef:
+                  name: v2board-php-env
+                  key: APP_URL
+            - name: DB_CONNECTION
+              valueFrom:
+                configMapKeyRef:
+                  name: v2board-php-env
+                  key: DB_CONNECTION
+            - name: DB_DATABASE
+              valueFrom:
+                configMapKeyRef:
+                  name: v2board-php-env
+                  key: DB_DATABASE
+            - name: DB_HOST
+              valueFrom:
+                configMapKeyRef:
+                  name: v2board-php-env
+                  key: DB_HOST
+            - name: DB_PORT
+              valueFrom:
+                configMapKeyRef:
+                  name: v2board-php-env
+                  key: DB_PORT
+            - name: REDIS_HOST
+              valueFrom:
+                configMapKeyRef:
+                  name: v2board-php-env
+                  key: REDIS_HOST
+            - name: REDIS_PORT
+              valueFrom:
+                configMapKeyRef:
+                  name: v2board-php-env
+                  key: REDIS_PORT
+            - name: DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: mariadb
+                  key: mariadb-password
+            - name: DB_USERNAME
+              valueFrom:
+                configMapKeyRef:
+                  name: v2board-php-env
+                  key: DB_USERNAME
+            - name: STAKATER_V2BOARD_PHP_ENV_CONFIGMAP
+              value: 0727fc871a3edf91f8d0afec479a8b6057ecffd8
+          resources: {}
+          volumeMounts:
+            - name: host-time
+              readOnly: true
+              mountPath: /etc/localtime
+            - name: volume-qmdt9d
+              readOnly: true
+              mountPath: /etc/nginx/conf.d
+            - name: volume-qvfp1p
+              mountPath: /www/v2board/config
+              subPath: v2board/config
+          livenessProbe:
+            httpGet:
+              path: /
+              port: 80
+              scheme: HTTP
+            initialDelaySeconds: 20
+            timeoutSeconds: 1
+            periodSeconds: 10
+            successThreshold: 1
+            failureThreshold: 3
+          readinessProbe:
+            httpGet:
+              path: /
+              port: 80
+              scheme: HTTP
+            initialDelaySeconds: 15
+            timeoutSeconds: 5
+            periodSeconds: 10
+            successThreshold: 1
+            failureThreshold: 3
+          lifecycle:
+            preStop:
+              exec:
+                command:
+                  - sh
+                  - '-c'
+                  - sleep 15 && /usr/sbin/nginx -s quit
+          terminationMessagePath: /dev/termination-log
+          terminationMessagePolicy: File
+          imagePullPolicy: Always
+        - name: container-php80
+          image: >-
+            asia-east2-docker.pkg.dev/ahdark-services/star-horizon/v2board-php:latest
+          ports:
+            - name: tcp-9000
+              containerPort: 9000
+              protocol: TCP
+          env:
+            - name: APP_DEBUG
+              valueFrom:
+                configMapKeyRef:
+                  name: v2board-php-env
+                  key: APP_DEBUG
+            - name: APP_KEY
+              valueFrom:
+                configMapKeyRef:
+                  name: v2board-php-env
+                  key: APP_KEY
+            - name: APP_NAME
+              valueFrom:
+                configMapKeyRef:
+                  name: v2board-php-env
+                  key: APP_NAME
+            - name: APP_URL
+              valueFrom:
+                configMapKeyRef:
+                  name: v2board-php-env
+                  key: APP_URL
+            - name: DB_CONNECTION
+              valueFrom:
+                configMapKeyRef:
+                  name: v2board-php-env
+                  key: DB_CONNECTION
+            - name: DB_DATABASE
+              valueFrom:
+                configMapKeyRef:
+                  name: v2board-php-env
+                  key: DB_DATABASE
+            - name: DB_HOST
+              valueFrom:
+                configMapKeyRef:
+                  name: v2board-php-env
+                  key: DB_HOST
+            - name: DB_PORT
+              valueFrom:
+                configMapKeyRef:
+                  name: v2board-php-env
+                  key: DB_PORT
+            - name: REDIS_HOST
+              valueFrom:
+                configMapKeyRef:
+                  name: v2board-php-env
+                  key: REDIS_HOST
+            - name: REDIS_PORT
+              valueFrom:
+                configMapKeyRef:
+                  name: v2board-php-env
+                  key: REDIS_PORT
+            - name: DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: mariadb
+                  key: mariadb-password
+            - name: DB_USERNAME
+              valueFrom:
+                configMapKeyRef:
+                  name: v2board-php-env
+                  key: DB_USERNAME
+          resources: {}
+          volumeMounts:
+            - name: host-time
+              readOnly: true
+              mountPath: /etc/localtime
+            - name: volume-qvfp1p
+              mountPath: /www/v2board/config
+              subPath: v2board/config
+          terminationMessagePath: /dev/termination-log
+          terminationMessagePolicy: File
+          imagePullPolicy: Always
+      restartPolicy: Always
+      terminationGracePeriodSeconds: 30
+      dnsPolicy: ClusterFirst
+      serviceAccountName: default
+      serviceAccount: default
+      securityContext: {}
+      affinity:
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+            - weight: 100
+              podAffinityTerm:
+                labelSelector:
+                  matchLabels:
+                    app: v2board
+                topologyKey: kubernetes.io/hostname
+      schedulerName: default-scheduler
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 25%
+      maxSurge: 25%
+  revisionHistoryLimit: 10
+  progressDeadlineSeconds: 600

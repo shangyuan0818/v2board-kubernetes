@@ -1,0 +1,19 @@
+kind: ConfigMap
+apiVersion: v1
+metadata:
+  name: v2board-php-env
+  namespace: v2b-k8s
+  annotations:
+    kubesphere.io/creator: topjohncian
+data:
+  APP_DEBUG: 'true'
+  APP_KEY: 'base64:dygBoOO7LM5270+d8nv2RCeIuSUUjXjqiIC5fiF6+BE='
+  APP_NAME: v2btest
+  APP_URL: 'http://localhost'
+  DB_CONNECTION: mysql
+  DB_DATABASE: v2board
+  DB_HOST: mariadb.v2b-k8s.svc.ahdark-cluster-gke.ahdark.net
+  DB_PORT: '3306'
+  DB_USERNAME: v2board
+  REDIS_HOST: redis-service.v2b-k8s.svc.ahdark-cluster-gke.ahdark.net
+  REDIS_PORT: '6379'

@@ -1,0 +1,25 @@
+kind: PersistentVolume
+apiVersion: v1
+metadata:
+  name: v2board-nfs-pvc
+  annotations:
+    pv.kubernetes.io/bound-by-controller: 'yes'
+  finalizers:
+    - kubernetes.io/pv-protection
+spec:
+  capacity:
+    storage: 1Gi
+  nfs:
+    server: v2board-nfs-server.v2b-k8s.svc.ahdark-cluster-gke.ahdark.net
+    path: /
+  accessModes:
+    - ReadWriteMany
+  claimRef:
+    kind: PersistentVolumeClaim
+    namespace: v2b-k8s
+    name: v2board-nfs
+    uid: cc84c380-ca14-40b8-b5a2-a383e7455191
+    apiVersion: v1
+    resourceVersion: '10269914'
+  persistentVolumeReclaimPolicy: Retain
+  volumeMode: Filesystem

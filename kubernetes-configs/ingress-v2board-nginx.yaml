@@ -1,0 +1,24 @@
+kind: Ingress
+apiVersion: networking.k8s.io/v1
+metadata:
+  name: v2board-route
+  namespace: v2b-k8s
+  annotations:
+    kubesphere.io/creator: topjohncian
+spec:
+  ingressClassName: ingress-nginx
+  tls:
+    - hosts:
+        - dev.yuzudream.com
+      secretName: dev-yuzudream-com-tls
+  rules:
+    - host: dev.yuzudream.com
+      http:
+        paths:
+          - path: /
+            pathType: ImplementationSpecific
+            backend:
+              service:
+                name: v2board-nginx-service
+                port:
+                  number: 80

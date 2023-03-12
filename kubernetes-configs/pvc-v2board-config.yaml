@@ -1,0 +1,23 @@
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: v2board-config
+  namespace: v2b-k8s
+  annotations:
+    kubesphere.io/creator: topjohncian
+    pv.kubernetes.io/bind-completed: 'yes'
+    pv.kubernetes.io/bound-by-controller: 'yes'
+    volume.beta.kubernetes.io/storage-provisioner: pd.csi.storage.gke.io
+    volume.kubernetes.io/selected-node: gke-ahdark-cluster-default-pool-defefb4a-2rnq
+    volume.kubernetes.io/storage-provisioner: pd.csi.storage.gke.io
+  finalizers:
+    - kubernetes.io/pvc-protection
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1Gi
+  volumeName: pvc-9477ac9a-71b6-43f4-94fa-a61aadb528f1
+  storageClassName: standard-rwo
+  volumeMode: Filesystem

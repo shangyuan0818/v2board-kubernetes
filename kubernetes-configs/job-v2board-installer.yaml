@@ -1,0 +1,132 @@
+kind: Job
+apiVersion: batch/v1
+metadata:
+  name: v2board-install
+  namespace: v2b-k8s
+  labels:
+    app: v2board-install
+  annotations:
+    batch.kubernetes.io/job-tracking: ''
+    kubesphere.io/creator: topjohncian
+    revisions: >-
+      {"1":{"status":"completed","succeed":1,"desire":1,"uid":"f80d73fd-858a-493b-84f7-62a66eb4d839","start-time":"2023-03-12T06:38:42Z","completion-time":"2023-03-12T06:39:41Z"},"2":{"status":"completed","succeed":1,"desire":1,"uid":"fd6e74cb-d9b0-48d2-bc02-76421f19a3f8","start-time":"2023-03-12T06:47:31Z","completion-time":"2023-03-12T06:47:55Z"}}
+spec:
+  parallelism: 1
+  completions: 1
+  activeDeadlineSeconds: 600
+  backoffLimit: 1
+  selector:
+    matchLabels:
+      controller-uid: fd6e74cb-d9b0-48d2-bc02-76421f19a3f8
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        controller-uid: fd6e74cb-d9b0-48d2-bc02-76421f19a3f8
+        job-name: v2board-install
+      annotations:
+        kubesphere.io/creator: topjohncian
+    spec:
+      volumes:
+        - name: host-time
+          hostPath:
+            path: /etc/localtime
+            type: ''
+        - name: volume-qvfp1p
+          persistentVolumeClaim:
+            claimName: v2board-nfs
+      containers:
+        - name: container-installer
+          image: >-
+            asia-east2-docker.pkg.dev/ahdark-services/star-horizon/v2board-php:latest
+          command:
+            - sh
+          args:
+            - /entrypoint_artisan_job.sh
+            - 'v2board:install'
+          env:
+            - name: APP_DEBUG
+              valueFrom:
+                configMapKeyRef:
+                  name: v2board-php-env
+                  key: APP_DEBUG
+            - name: APP_KEY
+              valueFrom:
+                configMapKeyRef:
+                  name: v2board-php-env
+                  key: APP_KEY
+            - name: APP_NAME
+              valueFrom:
+                configMapKeyRef:
+                  name: v2board-php-env
+                  key: APP_NAME
+            - name: APP_URL
+              valueFrom:
+                configMapKeyRef:
+                  name: v2board-php-env
+                  key: APP_URL
+            - name: DB_CONNECTION
+              valueFrom:
+                configMapKeyRef:
+                  name: v2board-php-env
+                  key: DB_CONNECTION
+            - name: DB_DATABASE
+              valueFrom:
+                configMapKeyRef:
+                  name: v2board-php-env
+                  key: DB_DATABASE
+            - name: DB_HOST
+              valueFrom:
+                configMapKeyRef:
+                  name: v2board-php-env
+                  key: DB_HOST
+            - name: DB_PORT
+              valueFrom:
+                configMapKeyRef:
+                  name: v2board-php-env
+                  key: DB_PORT
+            - name: REDIS_HOST
+              valueFrom:
+                configMapKeyRef:
+                  name: v2board-php-env
+                  key: REDIS_HOST
+            - name: REDIS_PORT
+              valueFrom:
+                configMapKeyRef:
+                  name: v2board-php-env
+                  key: REDIS_PORT
+            - name: DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: mariadb
+                  key: mariadb-password
+            - name: DB_USERNAME
+              valueFrom:
+                configMapKeyRef:
+                  name: v2board-php-env
+                  key: DB_USERNAME
+            - name: DEFAULT_ADMIN_EMAIL
+              valueFrom:
+                configMapKeyRef:
+                  name: v2board-install-config
+                  key: DEFAULT_ADMIN_EMAIL
+          resources: {}
+          volumeMounts:
+            - name: host-time
+              readOnly: true
+              mountPath: /etc/localtime
+            - name: volume-qvfp1p
+              mountPath: /www/v2board/config
+              subPath: v2board/config
+          terminationMessagePath: /dev/termination-log
+          terminationMessagePolicy: File
+          imagePullPolicy: Always
+      restartPolicy: OnFailure
+      terminationGracePeriodSeconds: 60
+      dnsPolicy: ClusterFirst
+      serviceAccountName: default
+      serviceAccount: default
+      securityContext: {}
+      schedulerName: default-scheduler
+  completionMode: NonIndexed
+  suspend: false
