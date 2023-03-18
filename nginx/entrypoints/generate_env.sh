@@ -49,4 +49,5 @@ PUSHER_APP_CLUSTER=mt1
 # MIX_PUSHER_APP_CLUSTER="${PUSHER_APP_CLUSTER}"
 EOF
 
+mkdir -p config/theme
 yes n | cp -ir config_example/* config/
